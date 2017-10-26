@@ -25,6 +25,9 @@
 
 import Foundation
 import Security
+#if os(iOS) || os(OSX)
+import LocalAuthentication
+#endif
 
 public let KeychainAccessErrorDomain = "com.kishikawakatsumi.KeychainAccess.error"
 
@@ -389,6 +392,13 @@ public final class Keychain {
         return options.authenticationPrompt
     }
 
+    #if os(iOS) || os(OSX)
+    @available(iOS 9.0, OSX 10.11, *)
+    public var authenticationContext: LAContext? {
+        return options.authenticationContext as? LAContext
+    }
+    #endif
+
     fileprivate let options: Options
 
     // MARK:
@@ -488,6 +498,15 @@ public final class Keychain {
         options.authenticationPrompt = authenticationPrompt
         return Keychain(options)
     }
+
+    #if os(iOS) || os(OSX)
+    @available(iOS 9.0, OSX 10.11, *)
+    public func authenticationContext(_ authenticationContext: LAContext) -> Keychain {
+        var options = self.options
+        options.authenticationContext = authenticationContext
+        return Keychain(options)
+    }
+    #endif
 
     // MARK:
 
@@ -759,7 +778,7 @@ public final class Keychain {
     }
 
     public func allKeys() -> [String] {
-        return type(of: self).prettify(itemClass: itemClass, items: items()).map { $0["key"] as! String }
+        return type(of: self).prettify(itemClass: itemClass, items: items()).flatMap { $0["key"] as? String }
     }
 
     public class func allItems(_ itemClass: ItemClass) -> [[String: Any]] {
@@ -1050,6 +1069,7 @@ struct Options {
     var comment: String?
 
     var authenticationPrompt: String?
+    var authenticationContext: AnyObject?
 
     var attributes = [String: Any]()
 }
@@ -1185,6 +1205,14 @@ extension Options {
                 query[UseOperationPrompt] = authenticationPrompt
             }
         }
+
+        #if !os(watchOS)
+        if #available(iOS 9.0, OSX 10.11, *) {
+            if authenticationContext != nil {
+                query[UseAuthenticationContext] = authenticationContext
+            }
+        }
+        #endif
 
         return query
     }
@@ -1639,7 +1667,7 @@ extension CFError {
     var error: NSError {
         let domain = CFErrorGetDomain(self) as String
         let code = CFErrorGetCode(self)
-        let userInfo = CFErrorCopyUserInfo(self) as! [NSObject: Any]
+        let userInfo = CFErrorCopyUserInfo(self) as! [String: Any]
 
         return NSError(domain: domain, code: code, userInfo: userInfo)
     }
@@ -2874,10 +2902,7 @@ extension Status: RawRepresentable, CustomStringConvertible {
 }
 
 extension Status: CustomNSError {
-
-    public static var errorDomain: String {
-        return KeychainAccessErrorDomain
-    }
+    public static let errorDomain = KeychainAccessErrorDomain
 
     public var errorCode: Int {
         return Int(rawValue)
