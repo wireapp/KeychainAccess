@@ -576,11 +576,21 @@ class KeychainAccessTests: XCTestCase {
                 XCTAssertNil(attributes?.ref)
                 XCTAssertNotNil(attributes?.persistentRef)
                 XCTAssertEqual(attributes?.accessible, Accessibility.afterFirstUnlock.rawValue)
-                if #available(iOS 9.0, *) {
+                #if os(iOS)
+                if #available(iOS 11.3, *) {
+                    XCTAssertNotNil(attributes?.accessControl)
+                } else if #available(iOS 9.0, *) {
                     XCTAssertNil(attributes?.accessControl)
                 } else {
                     XCTAssertNotNil(attributes?.accessControl)
                 }
+                #else
+                if #available(tvOS 11.3, *) {
+                    XCTAssertNotNil(attributes?.accessControl)
+                } else {
+                    XCTAssertNil(attributes?.accessControl)
+                }
+                #endif
                 XCTAssertEqual(attributes?.accessGroup, "27AEDK3C9F.com.kishikawakatsumi.KeychainAccess.TestHost")
                 XCTAssertNotNil(attributes?.synchronizable)
                 XCTAssertNotNil(attributes?.creationDate)
@@ -618,11 +628,21 @@ class KeychainAccessTests: XCTestCase {
                 XCTAssertNil(attributes?.ref)
                 XCTAssertNotNil(attributes?.persistentRef)
                 XCTAssertEqual(attributes?.accessible, Accessibility.afterFirstUnlock.rawValue)
-                if #available(iOS 9.0, *) {
+                #if os(iOS)
+                if #available(iOS 11.3, *) {
+                    XCTAssertNotNil(attributes?.accessControl)
+                } else if #available(iOS 9.0, *) {
                     XCTAssertNil(attributes?.accessControl)
                 } else {
                     XCTAssertNotNil(attributes?.accessControl)
                 }
+                #else
+                if #available(tvOS 11.3, *) {
+                    XCTAssertNotNil(attributes?.accessControl)
+                } else {
+                    XCTAssertNil(attributes?.accessControl)
+                }
+                #endif
                 XCTAssertEqual(attributes?.accessGroup, "27AEDK3C9F.com.kishikawakatsumi.KeychainAccess.TestHost")
                 XCTAssertNotNil(attributes?.synchronizable)
                 XCTAssertNotNil(attributes?.creationDate)
@@ -661,11 +681,21 @@ class KeychainAccessTests: XCTestCase {
                 XCTAssertNil(attributes?.ref)
                 XCTAssertNotNil(attributes?.persistentRef)
                 XCTAssertEqual(attributes?.accessible, Accessibility.afterFirstUnlock.rawValue)
-                if #available(iOS 9.0, *) {
+                #if os(iOS)
+                if #available(iOS 11.3, *) {
+                    XCTAssertNotNil(attributes?.accessControl)
+                } else if #available(iOS 9.0, *) {
                     XCTAssertNil(attributes?.accessControl)
                 } else {
                     XCTAssertNotNil(attributes?.accessControl)
                 }
+                #else
+                if #available(tvOS 11.3, *) {
+                    XCTAssertNotNil(attributes?.accessControl)
+                } else {
+                    XCTAssertNil(attributes?.accessControl)
+                }
+                #endif
                 XCTAssertEqual(attributes?.accessGroup, "27AEDK3C9F.com.kishikawakatsumi.KeychainAccess.TestHost")
                 XCTAssertNotNil(attributes?.synchronizable)
                 XCTAssertNotNil(attributes?.creationDate)
@@ -1346,7 +1376,7 @@ class KeychainAccessTests: XCTestCase {
             let accessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.rawValue as CFTypeRef, flags, &error)
 
             XCTAssertNil(error)
-            XCTAssertNotNil(accessControl)
+            XCTAssertTrue(accessControl != nil)
         }
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
@@ -1394,7 +1424,7 @@ class KeychainAccessTests: XCTestCase {
             let accessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.rawValue as CFTypeRef, flags, &error)
 
             XCTAssertNil(error)
-            XCTAssertNotNil(accessControl)
+            XCTAssertTrue(accessControl != nil)
         }
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
@@ -1430,7 +1460,7 @@ class KeychainAccessTests: XCTestCase {
             let accessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.rawValue as CFTypeRef, flags, &error)
 
             XCTAssertNil(error)
-            XCTAssertNotNil(accessControl)
+            XCTAssertTrue(accessControl != nil)
         }
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
@@ -1442,7 +1472,7 @@ class KeychainAccessTests: XCTestCase {
             let accessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.rawValue as CFTypeRef, flags, &error)
 
             XCTAssertNil(error)
-            XCTAssertNotNil(accessControl)
+            XCTAssertTrue(accessControl != nil)
         }
         #endif
         #if os(OSX)
